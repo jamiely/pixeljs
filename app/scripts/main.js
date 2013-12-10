@@ -22,7 +22,11 @@ require(['app', 'jquery', 'bootstrap'], function (app, $) {
       return $('#mainCanvas').get(0);
     }
 
+    function previewCanvas() {
+      return $('#previewCanvas').get(0);
+    }
+
     $(function() { 
-      app.init(mainCanvas()); 
+      app.init(mainCanvas(), previewCanvas()); 
     });
 });
