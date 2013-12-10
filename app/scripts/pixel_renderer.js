@@ -14,6 +14,16 @@ define(['pixel', 'lodash'], function (pixel, _) {
       return c == 'FFFFFF' ? white : black;
     }
 
+    function coordinates(canvas) {
+      var sz = canvas.size();
+      var coords = _.range(sz.width).map(function(i) {
+        return _.range(sz.height).map(function(j) {
+          return {x: i, y: j};
+        });
+      });
+      return _.flatten(coords);
+    }
+
     var Renderer = function(element) {
       var context = element.getContext('2d');
 
@@ -38,7 +48,7 @@ define(['pixel', 'lodash'], function (pixel, _) {
     };
 
     var ScaleRenderer = function(element, canvas, scale) {
-      scale = scale || 1;
+      scale = Math.floor(scale || 1);
 
       var size = canvas.size();
       var context = element.getContext('2d');
@@ -47,35 +57,13 @@ define(['pixel', 'lodash'], function (pixel, _) {
       var height = Math.floor(size.height * scale);
       var pixelCount = width * height;
 
-      this.newImageData = function() {
-        return context.createImageData(width, height);
-      }
-
-      function toCoords(i) {
-        var x = i % width;
-        var y = Math.floor(i / width);
-        return { x: x, y: y };
-      }
-
-      var color = function(i) {
-        var coords = toCoords(i);
-        var norm = {x: Math.floor(coords.x / scale), y: Math.floor(coords.y / scale)};
-        return canvas.getColor(norm.x, norm.y);
-      };
-
-      var colors = function() {
-        return _.range(pixelCount).map(color);
-      }
-
       this.render = function() {
-        var iData = this.newImageData(canvas);
-        var i = 0;
-        colors(canvas).forEach(function(color) {
-          console.log("Setting color: " + color);
-          setColor(iData.data, i, col(color));
-          i += 4;
+        var scl = function(i) { return Math.floor(i * scale) };
+
+        coordinates(canvas).forEach(function(c) {
+          context.fillStyle = "#" + canvas.getColor(c.x, c.y);
+          context.fillRect(scl(c.x), scl(c.y), scale, scale);
         });
-        context.putImageData(iData, 0, 0);
       };
     };
 
