@@ -43,3 +43,4 @@ define(['pixel', 'chai'], function(pixel, chai) {
     });
   })();
 });
+
